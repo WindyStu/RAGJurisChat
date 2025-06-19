@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法律智询 - 专业法律AI助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FFB74D',
+                        dark: '#1E293B',
+                        light: '#F8FAFC',
+                        neutral: '#64748B',
+                        success: '#22C55E',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 10px 10px -5px rgba(22, 93, 255, 0.04);
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #165DFF 0%, #0D47A1 100%);
+            }
+            .glass-effect {
+                backdrop-filter: blur(10px);
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+            .animate-pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+        }
+    </style>
+</head>
+
+<body class="font-inter bg-light text-dark antialiased">
+<!-- 导航栏 -->
+<header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300">
+    <nav class="glass-effect border-b border-gray-200/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fa fa-balance-scale text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-primary">法律智询</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="#home" class="border-primary text-primary border-b-2 px-1 pt-1 inline-flex items-center text-sm font-medium">
+                            <i class="fa fa-home mr-1"></i>首页
+                        </a>
+                        <a href="#features" class="border-transparent text-neutral hover:text-primary hover:border-primary border-b-2 px-1 pt-1 inline-flex items-center text-sm font-medium transition-colors duration-200">
+                            <i class="fa fa-lightbulb-o mr-1"></i>功能
+                        </a>
+                        <a href="#knowledge" class="border-transparent text-neutral hover:text-primary hover:border-primary border-b-2 px-1 pt-1 inline-flex items-center text-sm font-medium transition-colors duration-200">
+                            <i class="fa fa-book mr-1"></i>知识库
+                        </a>
+                        <a href="#faq" class="border-transparent text-neutral hover:text-primary hover:border-primary border-b-2 px-1 pt-1 inline-flex items-center text-sm font-medium transition-colors duration-200">
+                            <i class="fa fa-question-circle mr-1"></i>常见问题
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button id="theme-toggle" class="p-2 rounded-full text-neutral hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors duration-200">
+                        <i class="fa fa-moon-o"></i>
+                    </button>
+                    <div class="ml-4 flex items-center sm:ml-6">
+                        <button id="login-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200">
+                            <i class="fa fa-user-circle-o mr-1"></i>登录
+                        </button>
+                    </div>
+                    <div class="ml-3 relative sm:hidden">
+                        <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-neutral hover:text-primary hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="sm:hidden hidden">
+            <div class="pt-2 pb-3 space-y-1 px-2 bg-white shadow-lg">
+                <a href="#home" class="bg-primary/10 text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium">首页</a>
+                <a href="#features" class="text-neutral hover:bg-primary/10 hover:text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium transition-colors duration-200">功能</a>
+                <a href="#knowledge" class="text-neutral hover:bg-primary/10 hover:text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium transition-colors duration-200">知识库</a>
+                <a href="#faq" class="text-neutral hover:bg-primary/10 hover:text-primary block pl-3 pr-4 py-2 rounded-md text-base font-medium transition-colors duration-200">常见问题</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- 英雄区域 -->
+<section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 gradient-bg text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 md:pr-12">
+                <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-shadow mb-4">
+                    专业法律问题<br>智能解答
+                </h1>
+                <p class="text-lg md:text-xl text-white/90 mb-8">
+                    利用先进的AI技术，结合中国法律知识库，为您提供准确、专业的法律咨询服务。
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="try-now-btn" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary bg-white hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200 transform hover:scale-105">
+                        <i class="fa fa-rocket mr-2"></i>立即体验
+                    </button>
+                    <button id="learn-more-btn" class="inline-flex items-center justify-center px-6 py-3 border border-white text-base font-medium rounded-md text-white bg-transparent hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200">
+                        <i class="fa fa-info-circle mr-2"></i>了解更多
+                    </button>
+                </div>
+                <div class="mt-8 flex items-center space-x-6">
+                    <div class="flex -space-x-2">
+                        <img class="h-10 w-10 rounded-full border-2 border-white" src="https://picsum.photos/id/1005/200/200" alt="用户头像">
+                        <img class="h-10 w-10 rounded-full border-2 border-white" src="https://picsum.photos/id/1012/200/200" alt="用户头像">
+                        <img class="h-10 w-10 rounded-full border-2 border-white" src="https://picsum.photos/id/1027/200/200" alt="用户头像">
+                    </div>
+                    <div class="text-sm">
+                        <span class="font-semibold">10,000+</span> 用户信赖
+                    </div>
+                    <div class="flex items-center">
+                        <div class="flex">
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star-half-o text-secondary"></i>
+                        </div>
+                        <span class="ml-1 text-sm">4.8/5</span>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-1/2 mt-12 md:mt-0 relative">
+                <div class="relative animate-float">
+                    <div class="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl transform rotate-6"></div>
+                    <img src="https://picsum.photos/id/180/600/400" alt="法律智能咨询" class="relative rounded-2xl shadow-2xl w-full max-w-md mx-auto">
+                    <div class="absolute -bottom-4 -right-4 bg-white p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-primary/10 p-2 rounded-full">
+                                <i class="fa fa-check text-primary"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-dark">98% 准确率</p>
+                                <p class="text-xs text-neutral">基于中国法律知识库</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 主要内容区域 -->
+<main class="py-16 bg-light">
+    <!-- 统计数据 -->
+    <section class="py-12 mb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="text-primary text-3xl mb-2">
+                        <i class="fa fa-book"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">10,000+</h3>
+                    <p class="text-neutral">法律条文</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="text-primary text-3xl mb-2">
+                        <i class="fa fa-gavel"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">5,000+</h3>
+                    <p class="text-neutral">案例分析</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="text-primary text-3xl mb-2">
+                        <i class="fa fa-users"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">100,000+</h3>
+                    <p class="text-neutral">法律咨询</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="text-primary text-3xl mb-2">
+                        <i class="fa fa-balance-scale"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">100+</h3>
+                    <p class="text-neutral">法律分类</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能介绍 -->
+    <section id="features" class="py-12 mb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">智能法律咨询功能</h2>
+                <p class="text-neutral max-w-2xl mx-auto">我们的AI法律助手提供多种功能，帮助您更好地理解法律问题，获取专业法律建议</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-comments text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">智能问答</h3>
+                    <p class="text-neutral">输入您的法律问题，获取基于中国法律条文的智能回答，快速解决您的法律疑惑。</p>
+                    <ul class="mt-4 space-y-2">
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>基于海量法律知识库</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>提供相关法律条文引用</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>支持追问和上下文理解</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-search text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">法律条文检索</h3>
+                    <p class="text-neutral">快速检索中国各类法律法规，获取准确的法律条文内容和解读，帮助您深入理解法律规定。</p>
+                    <ul class="mt-4 space-y-2">
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>覆盖宪法、民法、刑法等多领域</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>支持关键词搜索和高级检索</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>提供条文更新提醒</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-line-chart text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">法律风险评估</h3>
+                    <p class="text-neutral">分析您面临的法律风险，提供专业的风险评估报告和应对建议，帮助您有效防范法律风险。</p>
+                    <ul class="mt-4 space-y-2">
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>合同风险分析</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>商业活动合规性检查</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fa fa-check text-success mr-2"></i>
+                            <span>定制化风险应对方案</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 法律智能问答区域 -->
+    <section class="py-12 mb-16 bg-primary/5 rounded-3xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">法律智能问答</h2>
+                <p class="text-neutral max-w-2xl mx-auto">输入您的法律问题，我们的AI助手将基于中国法律知识库为您提供专业解答</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3">
+                    <!-- 左侧：法律问答界面 -->
+                    <div class="lg:col-span-2 border-r border-gray-100">
+                        <div class="p-6">
+                            <div id="chat-container" class="h-[400px] overflow-y-auto pr-2 mb-4 space-y-4">
+                                <!-- 欢迎消息 -->
+                                <div class="flex items-start mb-4">
+                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+                                        <i class="fa fa-robot"></i>
+                                    </div>
+                                    <div class="ml-3 max-w-full">
+                                        <div class="bg-primary/10 rounded-lg p-4">
+                                            <p class="text-dark">您好！我是法律智询AI助手，我可以回答您的法律问题，提供法律建议。请输入您想咨询的法律问题。</p>
+                                        </div>
+                                        <div class="text-xs text-neutral mt-1">法律智询AI · 刚刚</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 输入框 -->
+                            <div class="relative">
+                                <textarea id="question-input" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 resize-none" rows="2" placeholder="输入您的法律问题..."></textarea>
+                                <div class="absolute right-3 bottom-3 flex space-x-2">
+                                    <button id="clear-btn" class="p-2 rounded-full text-neutral hover:text-primary hover:bg-gray-100 focus:outline-none transition-colors duration-200">
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
+                                    <button id="send-btn" class="p-2 rounded-full bg-primary text-white hover:bg-primary/90 focus:outline-none transition-colors duration-200">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：法律知识库和推荐 -->
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-4">热门法律知识库</h3>
+
+                        <div class="space-y-4 mb-8">
+                            <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm card-hover">
+                                <div class="p-4">
+                                    <h4 class="font-medium mb-1">中华人民共和国宪法</h4>
+                                    <p class="text-sm text-neutral mb-2">国家的根本大法，规定国家的根本制度和根本任务</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">宪法</span>
+                                        <span class="text-xs text-neutral">更新于 2024-03-14</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm card-hover">
+                                <div class="p-4">
+                                    <h4 class="font-medium mb-1">中华人民共和国民法典</h4>
+                                    <p class="text-sm text-neutral mb-2">社会生活的百科全书，民事权利的宣言书和保障书</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">民法</span>
+                                        <span class="text-xs text-neutral">更新于 2024-01-01</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm card-hover">
+                                <div class="p-4">
+                                    <h4 class="font-medium mb-1">中华人民共和国刑法</h4>
+                                    <p class="text-sm text-neutral mb-2">规定犯罪和刑罚的法律规范的总称</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">刑法</span>
+                                        <span class="text-xs text-neutral">更新于 2024-06-01</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm card-hover">
+                                <div class="p-4">
+                                    <h4 class="font-medium mb-1">中华人民共和国劳动合同法</h4>
+                                    <p class="text-sm text-neutral mb-2">规范劳动关系，保护劳动者合法权益的重要法律</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">劳动法</span>
+                                        <span class="text-xs text-neutral">更新于 2023-12-28</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-lg font-semibold mb-4">法律领域分布</h3>
+                        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm h-64">
+                            <canvas id="legalChart"></canvas>
+                        </div>
+
+                        <div class="mt-8">
+                            <a href="#knowledge" class="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors duration-200">
+                                查看更多法律知识库
+                                <i class="fa fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 知识库展示 -->
+    <section id="knowledge" class="py-12 mb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">法律知识库</h2>
+                <p class="text-neutral max-w-2xl mx-auto">探索我们丰富的法律知识库，了解各类法律知识和最新法律动态</p>
+            </div>
+
+            <!-- 分类标签 -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button class="px-4 py-2 rounded-full bg-primary text-white text-sm font-medium">全部</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">宪法</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">民法</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">刑法</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">商法</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">行政法</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">经济法</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">社会法</button>
+                <button class="px-4 py-2 rounded-full bg-gray-100 text-neutral text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200">诉讼法</button>
+            </div>
+
+            <!-- 法律条文卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="h-48 bg-primary/10 flex items-center justify-center">
+                        <i class="fa fa-book text-primary text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-lg">中华人民共和国宪法</h3>
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">宪法</span>
+                        </div>
+                        <p class="text-neutral text-sm mb-4">国家的根本大法，具有最高的法律效力，规定了国家的根本制度和根本任务。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-neutral">更新于 2024-03-14</span>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="h-48 bg-primary/10 flex items-center justify-center">
+                        <i class="fa fa-balance-scale text-primary text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-lg">中华人民共和国民法典</h3>
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">民法</span>
+                        </div>
+                        <p class="text-neutral text-sm mb-4">社会生活的百科全书，系统整合了我国多年来长期实践形成的民事法律规范。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-neutral">更新于 2024-01-01</span>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="h-48 bg-primary/10 flex items-center justify-center">
+                        <i class="fa fa-gavel text-primary text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-lg">中华人民共和国刑法</h3>
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">刑法</span>
+                        </div>
+                        <p class="text-neutral text-sm mb-4">规定犯罪和刑罚的法律，是维护社会秩序和公共安全的重要保障。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-neutral">更新于 2024-06-01</span>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="h-48 bg-primary/10 flex items-center justify-center">
+                        <i class="fa fa-handshake-o text-primary text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-lg">中华人民共和国劳动合同法</h3>
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">劳动法</span>
+                        </div>
+                        <p class="text-neutral text-sm mb-4">调整劳动关系、保护劳动者合法权益，构建和发展和谐稳定的劳动关系。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-neutral">更新于 2023-12-28</span>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="h-48 bg-primary/10 flex items-center justify-center">
+                        <i class="fa fa-building text-primary text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-lg">中华人民共和国公司法</h3>
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">商法</span>
+                        </div>
+                        <p class="text-neutral text-sm mb-4">规范公司的组织和行为，保护公司、股东和债权人的合法权益，维护社会经济秩序。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-neutral">更新于 2024-05-01</span>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="h-48 bg-primary/10 flex items-center justify-center">
+                        <i class="fa fa-shield text-primary text-6xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-lg">中华人民共和国消费者权益保护法</h3>
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">经济法</span>
+                        </div>
+                        <p class="text-neutral text-sm mb-4">保护消费者的合法权益，维护社会经济秩序，促进社会主义市场经济健康发展。</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-neutral">更新于 2023-10-01</span>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 text-center">
+                <button class="px-6 py-3 bg-white border border-gray-200 rounded-lg text-neutral hover:text-primary hover:border-primary transition-colors duration-200 font-medium">
+                    加载更多 <i class="fa fa-refresh ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 常见问题 -->
+    <section id="faq" class="py-12 mb-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">常见问题</h2>
+                <p class="text-neutral max-w-2xl mx-auto">了解关于我们法律智能咨询服务的常见问题和解答</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex justify-between items-center">
+                        <span>法律智询AI的回答具有法律效力吗？</span>
+                        <i class="fa fa-chevron-down text-neutral transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-neutral">法律智询AI的回答仅供参考，不具有法律效力。我们的AI系统基于中国法律知识库提供智能解答，但不能替代专业律师的法律意见。对于具体的法律问题，建议咨询专业律师或相关法律机构。</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex justify-between items-center">
+                        <span>法律智询的知识库更新频率是多少？</span>
+                        <i class="fa fa-chevron-down text-neutral transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-neutral">我们的法律知识库每周更新一次，确保用户获取到最新的法律条文和解读。对于重要的法律修订和新出台的法律法规，我们会在24小时内进行更新。</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex justify-between items-center">
+                        <span>如何确保我的法律咨询内容不被泄露？</span>
+                        <i class="fa fa-chevron-down text-neutral transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-neutral">我们高度重视用户隐私保护，所有的法律咨询内容都经过加密处理，并严格遵守相关法律法规的要求。我们不会将用户的具体咨询内容分享给任何第三方，未经用户许可，不会用于其他用途。</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex justify-between items-center">
+                        <span>法律智询可以解答哪些类型的法律问题？</span>
+                        <i class="fa fa-chevron-down text-neutral transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-neutral">法律智询可以解答各类常见的法律问题，包括但不限于婚姻家庭、房产纠纷、合同纠纷、劳动纠纷、知识产权、刑事犯罪、交通事故、消费维权等领域的法律问题。我们的知识库覆盖了宪法、民法、刑法、商法、行政法等多个法律部门。</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button class="faq-toggle w-full px-6 py-4 text-left font-medium flex justify-between items-center">
+                        <span>使用法律智询需要付费吗？</span>
+                        <i class="fa fa-chevron-down text-neutral transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content px-6 pb-4 hidden">
+                        <p class="text-neutral">法律智询提供基础的法律咨询服务是免费的。对于更深入的法律分析、个性化的法律建议、合同审查等专业服务，我们提供付费会员服务。您可以根据自己的需求选择合适的服务类型。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- 页脚 -->
+<footer class="bg-dark text-white pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            <div>
+                <div class="flex items-center mb-4">
+                    <i class="fa fa-balance-scale text-primary text-2xl mr-2"></i>
+                    <span class="text-xl font-bold">法律智询</span>
+                </div>
+                <p class="text-gray-400 mb-4">专业的法律AI咨询助手，为您提供准确、及时的法律咨询服务。</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+                        <i class="fa fa-weibo"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+                        <i class="fa fa-wechat"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+                        <i class="fa fa-qq"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+                <ul class="space-y-2">
+                    <li><a href="#home" class="text-gray-400 hover:text-primary transition-colors duration-200">首页</a></li>
+                    <li><a href="#features" class="text-gray-400 hover:text-primary transition-colors duration-200">功能</a></li>
+                    <li><a href="#knowledge" class="text-gray-400 hover:text-primary transition-colors duration-200">知识库</a></li>
+                    <li><a href="#faq" class="text-gray-400 hover:text-primary transition-colors duration-200">常见问题</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">关于我们</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4">法律分类</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">宪法</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">民法</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">刑法</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">商法</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition-colors duration-200">行政法</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+                        <span class="text-gray-400">北京市海淀区中关村南大街5号</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa fa-phone text-primary mr-3"></i>
+                        <span class="text-gray-400">400-888-9999</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa fa-envelope text-primary mr-3"></i>
+                        <span class="text-gray-400">contact@legalai.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 pt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2025 法律智询. 保留所有权利.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-primary text-sm transition-colors duration-200">隐私政策</a>
+                    <a href="#" class="text-gray-500 hover:text-primary text-sm transition-colors duration-200">服务条款</a>
+                    <a href="#" class="text-gray-500 hover:text-primary text-sm transition-colors duration-200">法律声明</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- JavaScript -->
+<script>
+    // 导航栏滚动效果
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('bg-white', 'shadow-md');
+            navbar.classList.remove('glass-effect');
+        } else {
+            navbar.classList.remove('bg-white', 'shadow-md');
+            navbar.classList.add('glass-effect');
+        }
+    });
+
+    // 移动端菜单切换
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // FAQ 切换
+    document.querySelectorAll('.faq-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const content = this.nextElementSibling;
+            const icon = this.querySelector('i');
+
+            // 关闭其他所有FAQ
+            document.querySelectorAll('.faq-content').forEach(item => {
+                if (item !== content) {
+                    item.classList.add('hidden');
+                    item.previousElementSibling.querySelector('i').classList.remove('rotate-180');
+                }
+            });
+
+            // 切换当前FAQ
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        });
+    });
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+
+                // 关闭移动菜单
+                document.getElementById('mobile-menu').classList.add('hidden');
+            }
+        });
+    });
+
+    // 主题切换
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        if (icon.classList.contains('fa-moon-o')) {
+            icon.classList.remove('fa-moon-o');
+            icon.classList.add('fa-sun-o');
+            document.body.classList.add('dark-theme');
+        } else {
+            icon.classList.remove('fa-sun-o');
+            icon.classList.add('fa-moon-o');
+            document.body.classList.remove('dark-theme');
+        }
+    });
+
+    // 法律领域分布图表
+    const ctx = document.getElementById('legalChart').getContext('2d');
+    const legalChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['宪法', '民法', '刑法', '商法', '行政法', '其他'],
+            datasets: [{
+                data: [10, 30, 25, 15, 12, 8],
+                backgroundColor: [
+                    '#165DFF',
+                    '#FFB74D',
+                    '#22C55E',
+                    '#F59E0B',
+                    '#3B82F6',
+                    '#64748B'
+                ],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // 发送问题到后端
+    document.getElementById('send-btn').addEventListener('click', function() {
+        sendQuestion();
+    });
+
+    document.getElementById('question-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendQuestion();
+        }
+    });
+
+    document.getElementById('clear-btn').addEventListener('click', function() {
+        document.getElementById('question-input').value = '';
+    });
+
+    // 发送问题到后端并获取回答
+    function sendQuestion() {
+        const questionInput = document.getElementById('question-input');
+        const question = questionInput.value.trim();
+
+        if (!question) return;
+
+        const chatContainer = document.getElementById('chat-container');
+
+        // 添加用户问题到聊天界面
+        const userMessageHTML = `
+        <div class="flex items-start justify-end mb-4">
+          <div class="mr-3 max-w-full">
+            <div class="bg-primary text-white rounded-lg p-4">
+              <p>${question}</p>
+            </div>
+            <div class="text-xs text-neutral mt-1 text-right">我 · 刚刚</div>
+          </div>
+          <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+            <i class="fa fa-user text-gray-500"></i>
+          </div>
+        </div>
+      `;
+
+        chatContainer.insertAdjacentHTML('beforeend', userMessageHTML);
+        questionInput.value = '';
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // 添加AI正在思考的状态
+        const loadingHTML = `
+        <div class="flex items-start mb-4" id="loading-message">
+          <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+            <i class="fa fa-robot"></i>
+          </div>
+          <div class="ml-3 max-w-full">
+            <div class="bg-primary/10 rounded-lg p-4">
+              <div class="animate-pulse-slow">
+                <p class="text-dark">正在思考中...</p>
+              </div>
+            </div>
+            <div class="text-xs text-neutral mt-1">法律智询AI · 正在生成</div>
+          </div>
+        </div>
+      `;
+
+        chatContainer.insertAdjacentHTML('beforeend', loadingHTML);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // 发送问题到后端
+        fetch('/api/ask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // body: JSON.stringify({ question })
+            body: question // 直接发送纯文本问题
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response data:', data);
+                // 移除加载状态
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) loadingMessage.remove();
+
+                // 添加AI回答到聊天界面
+                const replyHTML = `
+          <div class="flex items-start mb-4">
+            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+              <i class="fa fa-robot"></i>
+            </div>
+            <div class="ml-3 max-w-full">
+              <div class="bg-primary/10 rounded-lg p-4">
+                <p class="text-dark">${data.content }</p>
+              </div>
+              <div class="text-xs text-neutral mt-1">法律智询AI · 刚刚</div>
+            </div>
+          </div>
+        `;
+
+                chatContainer.insertAdjacentHTML('beforeend', replyHTML);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                // 如果有相关法律条文，添加到聊天界面
+                if (data.references && data.references.length > 0) {
+                    let referencesHTML = `
+            <div class="flex items-start mb-4">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary">
+                <i class="fa fa-gavel"></i>
+              </div>
+              <div class="ml-3 max-w-full">
+                <div class="bg-secondary/10 rounded-lg p-4 border-l-4 border-secondary">
+                  <h4 class="font-semibold text-secondary">相关法律条文</h4>
+                  <div class="mt-2 space-y-3">
+          `;
+
+                    data.references.forEach(ref => {
+                        referencesHTML += `
+              <div>
+                <p class="font-medium">${ref.title}</p>
+                <p class="text-sm text-neutral mt-1">${ref.content}</p>
+              </div>
+            `;
+                    });
+
+                    referencesHTML += `
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+                    chatContainer.insertAdjacentHTML('beforeend', referencesHTML);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            })
+            .catch(error => {
+                // 移除加载状态
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) loadingMessage.remove();
+
+                // 显示错误信息
+                const errorHTML = `
+          <div class="flex items-start mb-4">
+            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-danger/20 flex items-center justify-center text-danger">
+              <i class="fa fa-exclamation-triangle"></i>
+            </div>
+            <div class="ml-3 max-w-full">
+              <div class="bg-danger/10 rounded-lg p-4 border-l-4 border-danger">
+                <p class="text-dark">抱歉，发生了错误，请稍后再试。</p>
+              </div>
+              <div class="text-xs text-neutral mt-1">系统 · 刚刚</div>
+            </div>
+          </div>
+        `;
+
+                chatContainer.insertAdjacentHTML('beforeend', errorHTML);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                console.error('Error fetching response:', error);
+            });
+    }
+
+    // 初始化页面
+    window.addEventListener('DOMContentLoaded', function() {
+        // 触发滚动事件以设置导航栏样式
+        window.dispatchEvent(new Event('scroll'));
+    });
+</script>
+</body>
+</html>
